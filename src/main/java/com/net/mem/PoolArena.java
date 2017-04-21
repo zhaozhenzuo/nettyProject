@@ -136,14 +136,20 @@ public class PoolArena {
 	}
 
 	public static void main(String[] args) {
-		PoolArena poolArena=new PoolArena(DEFAULT_CHUNK_SIZE, DEFAULT_PAGE_SIZE);
-		PoolBuf poolBuf=poolArena.allocateDirect(8192);
-		
+		PoolArena poolArena = new PoolArena(DEFAULT_CHUNK_SIZE, DEFAULT_PAGE_SIZE);
+		PoolBuf poolBuf = poolArena.allocateDirect(8192);
+
 		poolBuf.writeBytesToBuf("aa".getBytes());
-		
+
 		System.out.println(poolBuf.readBytesAsString());
-		
+
 		poolBuf.free();
+
+		PoolBuf poolBuf2 = poolArena.allocateDirect(8192);
+		poolBuf2.writeBytesToBuf("ss".getBytes());
+
+		System.out.println(poolBuf2.readBytesAsString());
+
 	}
 
 }

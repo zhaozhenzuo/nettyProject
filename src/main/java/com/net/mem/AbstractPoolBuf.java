@@ -46,7 +46,6 @@ public abstract class AbstractPoolBuf implements PoolBuf {
 		idx = 0;
 		offset = -1;
 		length = -1;
-		tmpBuffer = null;
 	}
 
 	public void init(PoolChunk chunk, int offset, int length, int idx) {
@@ -61,7 +60,7 @@ public abstract class AbstractPoolBuf implements PoolBuf {
 		if (bytes == null || bytes.length <= 0) {
 			return;
 		}
-
+		
 		tmpBuffer.clear().position(offset).limit(offset + length);
 		tmpBuffer.put(bytes);
 	}
