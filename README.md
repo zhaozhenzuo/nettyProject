@@ -20,9 +20,10 @@ V1.0.0<br/>
    
   PoolArena:<br/>
     内存分配类，职责是：<br/>
-     小于等于一个page大小的内存请求优先从threadCache分配，大于一个page的从公共内存池获取（目前未实现）。<br/>
+    小于等于一个page大小的内存请求优先从threadCache分配，大于一个page的从公共内存池获取（目前未实现）。<br/>
+    线程独有。
   MemCache:<br/>
     线程缓存的内存对象，内存有多个chunk实例对象，每个线程独有。<br/>
     
   PoolThreadCache:<br/>
-    实现线程缓存对象的存取<br/>
+    实现poolArena线程独立存储<br/>
