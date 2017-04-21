@@ -9,14 +9,14 @@ package com.net.mem;
  */
 public class PoolThreadCache {
 
-	private ThreadLocal<MemCache> cacheThreadLocal = new ThreadLocal<MemCache>();
+	private ThreadLocal<PoolArena> cacheThreadLocal = new ThreadLocal<PoolArena>();
 
-	public MemCache getFromCache() {
+	public PoolArena getFromCache() {
 		return cacheThreadLocal.get();
 	}
 
-	public void putCahceForCurrentThread(MemCache memCache) {
-		cacheThreadLocal.set(memCache);
+	public void putCahceForCurrentThread(PoolArena poolArena) {
+		cacheThreadLocal.set(poolArena);
 	}
 
 }

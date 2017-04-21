@@ -3,7 +3,8 @@ package com.net.mem;
 /**
  * 内存块分配器<br/>
  * 主要职责:<br/>
- * 优先从threadLocal分配缓存,没有则从全局内存池获取一块缓存
+ * 优先从threadLocal分配缓存,没有则从全局内存池获取一块缓存<br/>
+ * 这个poolArena每个线程独有
  * 
  * @author zhaozhenzuo
  *
@@ -14,7 +15,7 @@ public class PoolArena {
 
 	private int chunkSize;
 
-	private PoolThreadCache poolThreadCache;
+	private Thread currentThread;
 
 	// 默认chunk大小：16M
 	private static final int DEFAULT_CHUNK_SIZE = (int) Math.pow(2, 24);
@@ -22,10 +23,12 @@ public class PoolArena {
 	// 默认page大小：8Ｋ
 	private static final int DEFAULT_PAGE_SIZE = (int) Math.pow(2, 13);
 
+	private MemCache memCache;
+
 	public PoolArena(int chunkSize, int pageSize) {
 		this.pageSize = pageSize;
 		this.chunkSize = chunkSize;
-		poolThreadCache = new PoolThreadCache();
+		currentThread = Thread.currentThread();
 	}
 
 	public PoolBuf allocateDirect(int reqSize) {
@@ -39,7 +42,6 @@ public class PoolArena {
 		 */
 		PoolBuf res = null;
 		if (this.isTiny(normalSize)) {
-			MemCache memCache = poolThreadCache.getFromCache();
 			if (memCache != null) {
 				/**
 				 * 有线程缓存，从线程缓存中分配一个
@@ -48,12 +50,10 @@ public class PoolArena {
 			}
 
 			/**
-			 * 如果没有，就先创建一个，这里这样做在高并发访问时会创建大量的chunk，之后优化<br/>
-			 * TODO
+			 * 如果没有，就先创建一个 TODO
 			 */
 			if (res == null) {
 				this.initMemCache();
-				memCache = poolThreadCache.getFromCache();
 				res = this.allocateFromThreadCacheDirect(memCache, normalSize);
 			}
 
@@ -68,7 +68,7 @@ public class PoolArena {
 	}
 
 	private void initMemCache() {
-		MemCache memCache = new MemCache();
+		memCache = new MemCache();
 
 		/**
 		 * 1.当前线程分配一个chunk数组，并初始化，先初始化1个，之后优化<br/>
@@ -81,7 +81,6 @@ public class PoolArena {
 		}
 
 		memCache.setPoolChunks(poolChunks);
-		poolThreadCache.putCahceForCurrentThread(memCache);
 	}
 
 	/**
